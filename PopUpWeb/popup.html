@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PopUp WEB</title>
+    <link rel="stylesheet" href="popup.css">
+    <style>
+      .tool-status {
+        margin-top: 12px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tool-status--off {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+      }
+      .tool-status--on {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        color: #86efac;
+      }
+      .tool-status a {
+        color: inherit;
+        text-decoration: underline;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="panel">
+      <header class="panel__header">
+        <p class="eyebrow">Visualizador Pro</p>
+        <h1>PopUp WEB</h1>
+        <p id="active-tab-preview" class="description">Detectando pestaña...</p>
+      </header>
+
+      <div class="form">
+        <div class="dimensions">
+          <label class="field">
+            <span>Ancho</span>
+            <input id="width" name="width" type="number" value="480">
+          </label>
+          <label class="field">
+            <span>Alto</span>
+            <input id="height" name="height" type="number" value="720">
+          </label>
+        </div>
+
+        <div class="actions" style="grid-template-columns: 1fr; gap: 8px;">
+          <button id="pip-button" class="button" type="button">
+            Lanzar Flotante (Nativo PiP)
+          </button>
+          <button id="window-button" class="button button--secondary" type="button">
+            Abrir Ventana Independiente
+          </button>
+        </div>
+
+        <div id="tool-status-bar" class="tool-status tool-status--off">
+          <span id="status-icon">⚠️</span>
+          <span id="status-text">
+            Herramienta <b>pin2top</b> no detectada. 
+            <a href="#" id="open-instructions">Instalar aquí</a>
+          </span>
+        </div>
+
+        <p id="status" class="status"></p>
+      </div>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

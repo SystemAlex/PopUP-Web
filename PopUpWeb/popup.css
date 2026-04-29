@@ -1,0 +1,167 @@
+:root {
+  color-scheme: light dark;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #111827;
+  color: #f9fafb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 360px;
+  background:
+    radial-gradient(circle at top left, #1d4ed8 0%, transparent 35%),
+    radial-gradient(circle at bottom right, #0891b2 0%, transparent 30%),
+    #111827;
+}
+
+.panel {
+  padding: 20px;
+}
+
+.panel__header {
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #93c5fd;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.description {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #d1d5db;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.helper {
+  margin: -4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #cbd5e1;
+  word-break: break-word;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.field input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.92);
+  color: #f8fafc;
+  font-size: 14px;
+}
+
+.field input:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 1px;
+}
+
+.dimensions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.inline-actions {
+  display: grid;
+  gap: 12px;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.75);
+  color: #e5e7eb;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.toggle input {
+  margin: 0;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.button {
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, opacity 120ms ease;
+  background: #2563eb;
+  color: #eff6ff;
+}
+
+.button--small {
+  min-height: 42px;
+  padding: 10px 12px;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.button--secondary {
+  background: #1e293b;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+}
+
+.button--tertiary {
+  grid-column: 1 / -1;
+  background: #0f766e;
+  color: #ecfeff;
+}
+
+.status {
+  min-height: 20px;
+  margin: 0;
+  font-size: 13px;
+  color: #bfdbfe;
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cargando PopUp...</title>
+  <style>
+    body { 
+      background: #111827; 
+      color: white; 
+      font-family: sans-serif; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      height: 100vh; 
+      margin: 0; 
+    }
+    .loader { text-align: center; }
+    button { 
+      padding: 10px 20px; 
+      background: #2563eb; 
+      border: none; 
+      color: white; 
+      border-radius: 5px; 
+      cursor: pointer; 
+      display: none; 
+    }
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <p id="msg">Iniciando modo flotante...</p>
+    <button id="manual-btn">Hacer flotante ahora</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get('url');
+    const isPipRequested = params.get('pip') === 'true';
+    const width = parseInt(params.get('w')) || 480;
+    const height = parseInt(params.get('h')) || 720;
+
+    async function startPip() {
+      if (!window.documentPictureInPicture) {
+        document.getElementById('msg').textContent = "Tu navegador no soporta PiP.";
+        return;
+      }
+
+      try {
+        const pipWindow = await window.documentPictureInPicture.requestWindow({ width, height });
+        
+        pipWindow.document.body.style.margin = "0";
+        pipWindow.document.body.style.background = "#000";
+        pipWindow.document.body.style.height = "100vh";
+        pipWindow.document.body.style.display = "flex";
+
+        const iframe = pipWindow.document.createElement("iframe");
+        iframe.src = url;
+        iframe.style.flex = "1";
+        iframe.style.border = "none";
+        
+        pipWindow.document.body.appendChild(iframe);
+
+        // Una vez abierto el PiP, esta pestaña auxiliar ya no es necesaria
+        window.close();
+      } catch (err) {
+        console.error(err);
+        document.getElementById('msg').textContent = "Haz clic en el botón para activar:";
+        document.getElementById('manual-btn').style.display = "block";
+      }
+    }
+
+    if (isPipRequested) {
+      // Intentamos abrirlo automáticamente. 
+      // Nota: A veces el navegador requiere un clic físico real en ESTA página.
+      startPip();
+      document.getElementById('manual-btn').onclick = startPip;
+    } else if (url) {
+      // Modo normal si no es PiP (fallback)
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>

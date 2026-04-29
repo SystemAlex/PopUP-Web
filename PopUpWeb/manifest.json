@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "PopUp WEB",
+  "description": "Abre una web en popup, panel lateral o ventana flotante siempre arriba.",
+  "version": "1.0.2",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv3K7P6qC6G8F7U9m...",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "sidePanel",
+    "declarativeNetRequest",
+    "scripting",
+    "nativeMessaging"
+  ],
+  "host_permissions": ["https://*/*", "http://*/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "PopUp WEB",
+    "default_popup": "popup.html"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src *; child-src *;"
+  }
+}
