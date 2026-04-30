@@ -5,7 +5,7 @@
 ## Lo que hace
 
 - **Ventana Popup:** Abre la pestaña actual en una ventana independiente sin bordes de navegador.
-- **Modo Picture-in-Picture (PiP):** Permite visualizar el contenido en una ventana flotante que se superpone a otras aplicaciones (ideal para videos o monitoreo).
+- **Panel Lateral (Side Panel):** Abre el sitio en el panel lateral nativo de Chrome/Edge para navegar en paralelo.
 - **Siempre Arriba (Pin2Top):** Integración con una herramienta nativa para fijar las ventanas y que no se oculten tras otras aplicaciones.
 - **Bypass de restricciones:** Elimina automáticamente cabeceras de seguridad (`X-Frame-Options`, `CSP`) para permitir la carga de sitios que normalmente bloquean su uso en marcos o ventanas reducidas.
 - **Dimensiones personalizables:** Permite definir el ancho y alto exacto de la ventana.
@@ -22,8 +22,8 @@
 Para que la función de fijar ventana funcione, debes configurar la aplicación compañera:
 
 1. Entra en la carpeta `CompanionApp`.
-2. Haz clic derecho en `install.bat` y selecciona **Ejecutar como administrador**.
-3. Esto registrará el puente de comunicación para que la extensión pueda controlar el estado de las ventanas.
+2. Ejecuta `install.exe`. **No es necesario ejecutar como administrador**, ya que la configuración se realiza para tu usuario actual.
+3. Sigue las instrucciones en pantalla para registrar el puente de comunicación.
 
 ## Como usarla
 
@@ -32,7 +32,6 @@ Para que la función de fijar ventana funcione, debes configurar la aplicación 
 3. Ajusta el ancho y alto deseado.
 4. Selecciona una opción:
    - **Ventana:** Abre una ventana popup estándar. Si tienes `pin2top` instalado, se fijará automáticamente arriba.
-   - **PiP:** Abre el sitio en modo Picture-in-Picture nativo del navegador.
 
 ## Nota
 

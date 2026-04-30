@@ -1,13 +1,12 @@
 const activeTabPreview = document.getElementById("active-tab-preview");
 const widthInput = document.getElementById("width");
 const heightInput = document.getElementById("height");
-const pipButton = document.getElementById("pip-button");
 const windowButton = document.getElementById("window-button");
+const sidePanelButton = document.getElementById("sidepanel-button");
 const status = document.getElementById("status");
 const toolStatusBar = document.getElementById("tool-status-bar");
 const statusText = document.getElementById("status-text");
 const statusIcon = document.getElementById("status-icon");
-const openInstructionsBtn = document.getElementById("open-instructions");
 
 const DEFAULT_SETTINGS = { width: 480, height: 720 };
 let isToolInstalled = false;
@@ -29,15 +28,18 @@ async function checkToolInstallation() {
       { text: "ping" },
       (response) => {
         if (chrome.runtime.lastError) {
+          console.error("Error de Pin2Top:", chrome.runtime.lastError.message);
           // No instalado o error de comunicación
           setToolStatus(false);
         } else {
+          console.log("Respuesta de Pin2Top recibida:", response);
           // ¡Detectado!
           setToolStatus(true);
         }
       },
     );
   } catch (e) {
+    console.error("Error de sendNativeMessage:", e);
     setToolStatus(false);
   }
 }
@@ -55,16 +57,18 @@ function setToolStatus(installed) {
     toolStatusBar.className = "tool-status tool-status--off";
     statusIcon.textContent = "⚠️";
     statusText.innerHTML = `Pin2Top no detectado. ID: <code>${extensionId}</code>. <a href="#" id="open-instructions">Reinstalar</a>`;
-    
+
     // Re-vincular el evento después de actualizar el HTML
     const link = document.getElementById("open-instructions");
     if (link) {
-      link.onclick = (e) => {
-        e.preventDefault();
-        chrome.tabs.create({ url: chrome.runtime.getURL("instructions.html") });
-      };
+      link.onclick = openInstructions;
     }
   }
+}
+
+function openInstructions(e) {
+  if (e) e.preventDefault();
+  chrome.tabs.create({ url: chrome.runtime.getURL("instructions.html") });
 }
 
 windowButton.addEventListener("click", async () => {
@@ -78,27 +82,46 @@ windowButton.addEventListener("click", async () => {
   const h = parseInt(heightInput.value);
   saveDimensions(w, h);
 
+  // Enviar mensaje al background script para abrir la ventana
   chrome.runtime.sendMessage(
     {
       type: "open-popup-window",
-      payload: { url: tab.url, width: w, height: h },
+      payload: { url: tab.url, width: w, height: h, title: tab.title },
     },
     (response) => {
-      if (response?.ok && isToolInstalled) {
-        // Si está instalada, enviamos la orden de fijar la ventana
+      if (response?.ok && isToolInstalled && response.uniqueTitleId) {
+        // Si la herramienta está instalada y tenemos un ID de título único, enviamos la orden de fijar la ventana
         chrome.runtime.sendNativeMessage("com.popupweb.pin2top", {
-          text: "pin_last_window",
+          text: "pin_window_by_title_id", // Nueva acción específica
+          uniqueTitleId: response.uniqueTitleId, // Pasamos el ID único
         });
       }
-      window.close();
+      // Pequeña espera antes de cerrar el popup de la extensión
+      // Esto asegura que el foco pase a la nueva ventana y AHK la detecte.
+      setTimeout(() => window.close(), 150);
     },
   );
 });
 
-// Abrir instrucciones desde el botón estático si existe
-openInstructionsBtn?.addEventListener("click", (e) => {
-  e.preventDefault();
-  chrome.tabs.create({ url: chrome.runtime.getURL("instructions.html") });
+sidePanelButton?.addEventListener("click", async () => {
+  const [tab] = await chrome.tabs.query({
+    active: true,
+    lastFocusedWindow: true,
+  });
+  if (!isValidTab(tab)) return;
+
+  // El Side Panel solo permite cargar páginas de la extensión.
+  // Usamos viewer.html como puente para cargar la URL externa.
+  const targetPath = `viewer.html?url=${encodeURIComponent(tab.url)}`;
+
+  await chrome.sidePanel.setOptions({
+    windowId: tab.windowId,
+    path: targetPath,
+    enabled: true,
+  });
+
+  chrome.sidePanel.open({ windowId: tab.windowId });
+  window.close();
 });
 
 function isValidTab(tab) {
@@ -125,18 +148,3 @@ function refreshTabInfo() {
     }
   });
 }
-
-pipButton.addEventListener("click", async () => {
-  const [tab] = await chrome.tabs.query({
-    active: true,
-    lastFocusedWindow: true,
-  });
-  if (!isValidTab(tab)) return;
-
-  const w = parseInt(widthInput.value);
-  const h = parseInt(heightInput.value);
-  const viewerUrl = chrome.runtime.getURL(
-    `viewer.html?url=${encodeURIComponent(tab.url)}&pip=true&w=${w}&h=${h}`,
-  );
-  chrome.tabs.create({ url: viewerUrl });
-});

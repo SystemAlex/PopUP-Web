@@ -4,7 +4,8 @@
 ; ---------------------------
 ; PARÁMETROS CLI
 ; ---------------------------
-silent := false
+SetTitleMatchMode(2) ; Búsqueda parcial de títulos
+
 logFile := ""
 action := ""
 targetPID := ""
@@ -17,13 +18,11 @@ for i, param in A_Args {
         action := "on"
     else if (param = "/off")
         action := "off"
-    else if (param.Find("/pid:") = 1)
+    else if (InStr(param, "/pid:") = 1)
         targetPID := SubStr(param, 6)
-    else if (param.Find("/title:") = 1)
+    else if (InStr(param, "/title:") = 1)
         targetTitle := SubStr(param, 8)
-    else if (param = "/silent")
-        silent := true
-    else if (param.Find("/log:") = 1)
+    else if (InStr(param, "/log:") = 1)
         logFile := SubStr(param, 6)
     else if (param = "/help")
         action := "help"
@@ -44,7 +43,6 @@ Uso:
   Pin2Top.exe /off
   Pin2Top.exe /pid:1234
   Pin2Top.exe /title:""Texto ventana""
-  Pin2Top.exe /silent
   Pin2Top.exe /log:""ruta.log""
   Pin2Top.exe /help
 
@@ -54,7 +52,6 @@ Descripción:
   /off           Desactiva AlwaysOnTop
   /pid:1234      Aplica a un proceso por PID
   /title:Texto   Aplica a una ventana cuyo título contenga el texto
-  /silent        No muestra mensajes
   /log:ruta      Guarda registro de acciones
   /help          Muestra esta ayuda
 )"
@@ -76,37 +73,38 @@ Log(msg) {
 GetTargetWindow() {
     global targetPID, targetTitle
 
-    if (targetPID != "")
-        return WinGetID("ahk_pid " targetPID)
+    if (targetPID != "") {
+        return WinExist("ahk_pid " targetPID)
+    }
 
-    if (targetTitle != "")
-        return WinGetID(targetTitle)
+    if (targetTitle != "") {
+        return WinExist(targetTitle)
+    }
 
-    return WinGetID("A")
+    Sleep(500) ; Pausa para dar tiempo a cambiar de ventana si se usa desde CLI
+    return WinExist("A")
 }
 
 ; ---------------------------
 ; APLICAR ACCIÓN
 ; ---------------------------
 ApplyAction(action) {
-    try {
-        hWnd := GetTargetWindow()
-        if (!hWnd)
-            return
+    hWnd := GetTargetWindow()
+    if (!hWnd) {
+        MsgBox("No se encontró ventana objetivo")
+        return
+    }
 
-        exStyle := WinGetExStyle("ahk_id " hWnd)
+    exStyle := WinGetExStyle("ahk_id " hWnd)
 
-        if (action = "toggle") {
-            WinSetAlwaysOnTop(!(exStyle & 0x8), "ahk_id " hWnd)
-        }
-        else if (action = "on") {
-            WinSetAlwaysOnTop(true, "ahk_id " hWnd)
-        }
-        else if (action = "off") {
-            WinSetAlwaysOnTop(false, "ahk_id " hWnd)
-        }
-    } catch Error as e {
-        Log("Error en ApplyAction: " e.Message)
+    if (action = "toggle") {
+        WinSetAlwaysOnTop(!(exStyle & 0x8), "ahk_id " hWnd)
+    }
+    else if (action = "on") {
+        WinSetAlwaysOnTop(true, "ahk_id " hWnd)
+    }
+    else if (action = "off") {
+        WinSetAlwaysOnTop(false, "ahk_id " hWnd)
     }
 }
 
@@ -115,12 +113,23 @@ ApplyAction(action) {
 ; ---------------------------
 ; Si no se pasaron argumentos de acción, nos quedamos escuchando al navegador
 if (action == "") {
-    ; Abrimos stdin y stdout para comunicación binaria
-    stdin := FileOpen("*", "r")
-    stdout := FileOpen("*", "w")
+    ; Abrimos stdin y stdout usando handles de sistema para asegurar modo binario puro (UTF-8-RAW)
+    try {
+        stdin := FileOpen(DllCall("GetStdHandle", "UInt", -10, "Ptr"), "h", "UTF-8-RAW")
+        stdout := FileOpen(DllCall("GetStdHandle", "UInt", -11, "Ptr"), "h", "UTF-8-RAW")
 
-    ; Iniciamos el bucle de escucha
-    SetTimer(ListenToBrowser, 100)
+        if !stdin || !stdout
+            ExitApp()
+    } catch {
+        ; Si no se puede abrir el stream (ej: ejecutado manualmente), salimos sin mostrar nada
+        ExitApp()
+    }
+
+    ; En v2, Persistent asegura que el host no muera si el loop espera datos
+    Persistent(true)
+    loop {
+        ListenToBrowser()
+    }
 } else if (action == "help") {
     ShowHelp()
     ExitApp()
@@ -134,34 +143,84 @@ if (action == "") {
 ListenToBrowser() {
     global stdin, stdout
 
-    ; Chrome envía 4 bytes de longitud
-    if (stdin.RawRead(bufLength := Buffer(4), 4)) {
+    ; Intentamos leer la longitud (esto bloquea hasta que llegue algo o se cierre)
+    try {
+        readBytes := stdin.RawRead(bufLength := Buffer(4), 4)
+    } catch {
+        ExitApp()
+    }
+
+    if (readBytes == 4) {
         msgLength := NumGet(bufLength, 0, "UInt")
 
-        if (msgLength > 0) {
-            msgJson := stdin.Read(msgLength)
+        if (msgLength > 0 && msgLength < 1024 * 1024) { ; Protección contra mensajes gigantes
+            bufMsg := Buffer(msgLength)
+            stdin.RawRead(bufMsg, msgLength)
+            msgJson := StrGet(bufMsg, "UTF-8")
+            Log("Mensaje recibido: " msgJson)
 
-            if (InStr(msgJson, "pin_last_window")) {
-                Sleep(500) ; Esperar a que la ventana se asiente
-                ApplyAction("on")
-                SendResponse("fixed")
-            } else if (InStr(msgJson, "ping")) {
+            ; Extraer la acción y el ID único mediante RegEx simple
+            msgType := ""
+            uniqueTitleId := ""
+
+            if (RegExMatch(msgJson, '"text":"([^"]*)"', &match))
+                msgType := match[1]
+
+            if (RegExMatch(msgJson, '"uniqueTitleId":"([^"]*)"', &match))
+                uniqueTitleId := match[1]
+
+            if (msgType = "pin_window_by_title_id" && uniqueTitleId != "") {
+                targetTitle := "PopUp WEB - " . uniqueTitleId
+                Log("Buscando ventana específica: " targetTitle)
+
+                ; Esperar a que la ventana aparezca (máximo 3 segundos)
+                hWnd := 0
+                loop 30 {
+                    hWnd := WinExist(targetTitle)
+                    if (hWnd) {
+                        Log("Ventana encontrada (hWnd: " hWnd ")")
+                        break
+                    }
+                    Sleep(100)
+                }
+
+                if (hWnd) {
+                    WinSetAlwaysOnTop(true, "ahk_id " . hWnd)
+                    Log("Fijado exitoso: " targetTitle)
+                    SendResponse("fixed")
+                } else {
+                    Log("Error: No se encontró la ventana con ID " . uniqueTitleId)
+                    SendResponse("not_found")
+                }
+            } else if (msgType = "ping") {
                 SendResponse("pong")
             }
         }
+    } else if (readBytes == 0) {
+        ; Si el navegador cerró la tubería, terminamos para no consumir CPU
+        ExitApp()
     }
 }
 
 SendResponse(text) {
     global stdout
-    json := '{"status": "' text '"}'
-    len := StrLen(json)
+    json := '{"status":"' . text . '"}'
 
-    bufLen := Buffer(4)
-    NumPut("UInt", len, bufLen, 0)
-    stdout.RawWrite(bufLen, 4)
-    stdout.Write(json)
-    stdout.Read(0) ; Flush
+    ; 1. Calcular longitud exacta en bytes UTF-8 (sin el terminador nulo)
+    utf8_len := StrPut(json, "UTF-8") - 1
+
+    ; 2. Crear un único buffer para la longitud (4 bytes) + el mensaje
+    outBuf := Buffer(4 + utf8_len)
+
+    ; 3. Escribir la longitud en formato Little Endian (requerido por Chrome)
+    NumPut("UInt", utf8_len, outBuf, 0)
+
+    ; 4. Escribir el JSON justo después de los 4 bytes de longitud, sin nulo al final
+    StrPut(json, outBuf.Ptr + 4, utf8_len, "UTF-8")
+
+    ; 5. Enviar todo el bloque de una vez para evitar problemas de buffering
+    stdout.RawWrite(outBuf, outBuf.Size)
+    stdout.Read(0) ; Forzar el vaciado del stream (flush)
 }
 
 ; ---------------------------

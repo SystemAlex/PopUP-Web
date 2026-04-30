@@ -1,16 +1,9 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-; 1. Solicitar privilegios de administrador (Corregido para evitar bucles)
-if !A_IsAdmin {
-    try {
-        if A_IsCompiled
-            Run('*RunAs "' A_ScriptFullPath '"')
-        else
-            Run('*RunAs "' A_AhkPath '" "' A_ScriptFullPath '"')
-    }
-    ExitApp()
-}
+; NOTA: NO EJECUTAR COMO ADMINISTRADOR.
+; Si se ejecuta como Admin, el registro se hace en el perfil de Administrador
+; y el navegador (que corre como usuario normal) no encontrará el host.
 
 ; 2. Obtener ruta de LocalAppData
 localAppData := EnvGet("LOCALAPPDATA")
@@ -19,15 +12,29 @@ if (localAppData == "") {
     ExitApp()
 }
 
+; IMPORTANTE: Este ID debe coincidir con el que ves en chrome://extensions
+extensionId := "enammhlcbbmdkfenilddkmjonmbnblop"
+
 installDir := localAppData . "\PopUpWeb"
 exePath := installDir . "\pin2top.exe"
 jsonPath := installDir . "\com.popupweb.pin2top.json"
-; ID de la extensión derivado del 'key' en manifest.json
-extensionId := "pibofbhfcmldckpnhfceidbkcnlmfmge"
 
 ; 3. Interfaz de instalación
-if (MsgBox("¿Instalar PopUp WEB 'Siempre Arriba' en este equipo?", "Instalador", 36) = "No")
+if (MsgBox("¿Instalar el puente nativo 'Siempre Arriba'?`n`nID: " . extensionId, "Instalador", 36) = "No")
     ExitApp()
+
+; 4. Cerrar procesos existentes para permitir la sobrescritura
+if ProcessExist("pin2top.exe") {
+    try {
+        ProcessClose("pin2top.exe")
+        if ProcessWaitClose("pin2top.exe", 5) {
+            MsgBox(
+                "No se pudo cerrar pin2top.exe automáticamente. Por favor, ciérralo desde el Administrador de Tareas.",
+                "Error", 16)
+            ExitApp()
+        }
+    }
+}
 
 ; 4. Extracción y copiado (FileInstall empaqueta el archivo en el EXE)
 try {
@@ -36,7 +43,7 @@ try {
 
     FileInstall("pin2top.exe", exePath, 1)
 } catch Error as e {
-    MsgBox("Error al extraer archivos: " e.Message, "Error", 16)
+    MsgBox("Error al copiar pin2top.exe: " e.Message, "Error", 16)
     ExitApp()
 }
 
@@ -52,12 +59,20 @@ jsonContent := '{' .
 
 if FileExist(jsonPath)
     FileDelete(jsonPath)
-FileAppend(jsonContent, jsonPath, "UTF-8")
+
+; Escribir sin BOM (UTF-8-RAW) para que Chromium no falle al parsear
+f := FileOpen(jsonPath, "w", "UTF-8-RAW")
+f.Write(jsonContent)
+f.Close()
 
 ; 6. Escribir en el Registro (Chrome y Edge)
 try {
     RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\com.popupweb.pin2top")
     RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Microsoft\Edge\NativeMessagingHosts\com.popupweb.pin2top")
+    ; Soporte adicional para Brave, Vivaldi y Opera (Chromium-based)
+    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Brave-Browser\NativeMessagingHosts\com.popupweb.pin2top")
+    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Vivaldi\NativeMessagingHosts\com.popupweb.pin2top")
+    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Opera Software\NativeMessagingHosts\com.popupweb.pin2top")
 } catch Error as e {
     MsgBox("Error al escribir en el registro: " e.Message, "Error", 16)
 }

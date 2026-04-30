@@ -1,9 +1,0 @@
-{
-  "name": "com.popupweb.pin2top",
-  "description": "Puente para fijar ventanas de PopUp WEB",
-  "path": "pin2top.exe",
-  "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://*/*"
-  ]
-}

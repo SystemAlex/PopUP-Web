@@ -26,7 +26,7 @@
         color: #86efac;
       }
       .tool-status a {
-        color: inherit;
+        color: #60a5fa;
         text-decoration: underline;
         font-weight: bold;
       }
@@ -52,19 +52,21 @@
           </label>
         </div>
 
-        <div class="actions" style="grid-template-columns: 1fr; gap: 8px;">
-          <button id="pip-button" class="button" type="button">
-            Lanzar Flotante (Nativo PiP)
+        <div class="actions">
+          <button id="window-button" class="button"
+            type="button">
+            Ventana
           </button>
-          <button id="window-button" class="button button--secondary" type="button">
-            Abrir Ventana Independiente
+          <button id="sidepanel-button" class="button button--secondary"
+            type="button">
+            Panel Lateral
           </button>
         </div>
 
         <div id="tool-status-bar" class="tool-status tool-status--off">
           <span id="status-icon">⚠️</span>
           <span id="status-text">
-            Herramienta <b>pin2top</b> no detectada. 
+            Herramienta <b>pin2top</b> no detectada.
             <a href="#" id="open-instructions">Instalar aquí</a>
           </span>
         </div>

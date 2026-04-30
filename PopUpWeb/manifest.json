@@ -2,8 +2,13 @@
   "manifest_version": 3,
   "name": "PopUp WEB",
   "description": "Abre una web en popup, panel lateral o ventana flotante siempre arriba.",
-  "version": "1.0.2",
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv3K7P6qC6G8F7U9m...",
+  "version": "1.0.6",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4v5EzOXP3aAPCLVZsxc7TkTCTmLaHCreerlw85cDYxmxoPe52UGpvTR/oEl4S0p+5ngajOKhONSExhxxSgc7VX5MzbnCD6c3ThjRy0kLILkJgNBy7kdLdU6NTaToRIE8Ojaohfk3vVd9fFIQwodt6CwGfeoAV0FGM3reCFJUYrxpwpCvX5GjhJE5P3YRhOVJmqS+4WVNp2mrYS4eo292ilSbeuLkg37lkHxtmklyaw5MEn68GEGiaUMIFcumcjHs9ofsSnIFHoyaG4luyCwxjTlAn3vRC+ArtwUyIPZh26Zm+NCVBI2jjv807lem+fyISlRdW3l0aKsvNAS56gXRdwIDAQAB",
   "permissions": [
     "storage",
     "activeTab",
@@ -17,6 +22,11 @@
     "service_worker": "background.js"
   },
   "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
     "default_title": "PopUp WEB",
     "default_popup": "popup.html"
   },
