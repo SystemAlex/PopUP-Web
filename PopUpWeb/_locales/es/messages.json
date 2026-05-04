@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "PopUp WEB",
+    "description": "Nombre de la aplicación"
+  },
+  "appDescription": {
+    "message": "Abre una web ventana flotante siempre arriba o panel lateral.",
+    "description": "Descripción de la aplicación"
+  },
+  "appTitle": {
+    "message": "PopUp WEB",
+    "description": "Título de la acción"
+  }
+}
