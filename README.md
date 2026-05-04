@@ -1,42 +1,46 @@
 # PopUp WEB
 
-`PopUp WEB` es una extensión para navegadores que permite visualizar cualquier sitio web en ventanas flotantes, modo Picture-in-Picture o ventanas independientes con soporte para mantenerse "Siempre Arriba".
+`PopUp WEB` es una extensión para navegadores basados en Chromium diseñada para desacoplar sitios web de las pestañas tradicionales, permitiendo visualizarlos en ventanas emergentes minimalistas o en el panel lateral nativo.
 
-## Lo que hace
+## Características Principales
 
-- **Ventana Popup:** Abre la pestaña actual en una ventana independiente sin bordes de navegador.
-- **Panel Lateral (Side Panel):** Abre el sitio en el panel lateral nativo de Chrome/Edge para navegar en paralelo.
-- **Siempre Arriba (Pin2Top):** Integración con una herramienta nativa para fijar las ventanas y que no se oculten tras otras aplicaciones.
-- **Bypass de restricciones:** Elimina automáticamente cabeceras de seguridad (`X-Frame-Options`, `CSP`) para permitir la carga de sitios que normalmente bloquean su uso en marcos o ventanas reducidas.
-- **Dimensiones personalizables:** Permite definir el ancho y alto exacto de la ventana.
+- **🚀 Ventana Independiente:** Abre cualquier URL en una ventana popup sin marcos de navegación redundantes.
+- **📖 Soporte de Side Panel:** Integración con el panel lateral de Chrome/Edge para mantener herramientas o chats siempre visibles.
+- **🔓 Bypass de Bloqueo de Frames:** Utiliza un visor basado en `iframe` que permite cargar sitios que restringen su visualización (como Google o GitHub) eliminando las cabeceras de seguridad `X-Frame-Options` y `Content-Security-Policy`.
+- **📐 Dimensiones Flexibles:** Control total sobre el ancho y alto de la ventana antes de su apertura.
+- **📌 Soporte para `pinontop`:** Arquitectura preparada para comunicarse mediante *Native Messaging* con una herramienta externa para mantener las ventanas siempre al frente.
 
-## Como instalarla en Chrome o Edge
+## Instalación de la Extensión
 
-1. Abre `chrome://extensions/` o `edge://extensions/`.
-2. Activa el `Modo desarrollador`.
-3. Haz clic en `Cargar descomprimida`.
-4. Selecciona la carpeta `PopUpWeb` de este repositorio.
+1. Clona el repositorio.
+2. Ve a `chrome://extensions/` en tu navegador.
+3. Activa el **Modo de desarrollador**.
+4. Selecciona **Cargar descomprimida** y apunta a la subcarpeta `PopUpWeb`.
 
-### Instalación del modo "Siempre Arriba" (Opcional)
+## Configuración de "Siempre Arriba" (PinOnTop)
 
-Para que la función de fijar ventana funcione, debes configurar la aplicación compañera:
+Esta función requiere un puente de comunicación nativa con el sistema operativo:
 
-1. Entra en la carpeta `CompanionApp`.
-2. Ejecuta `install.exe`. **No es necesario ejecutar como administrador**, ya que la configuración se realiza para tu usuario actual.
-3. Sigue las instrucciones en pantalla para registrar el puente de comunicación.
+1. Descargue `install_pinontop.exe` de la página [Releases](https://github.com/SystemAlex/PopUP-Web/releases).
+2. Ejecuta el archivo `install_pinontop.exe`.
+   - **Nota:** No puede requerir privilegios de administrador.
+3. El script registrará automáticamente el host en:
+   - Google Chrome, Microsoft Edge, Brave, Vivaldi y Opera.
+4. Reinicia el navegador para que el cambio surta efecto.
+5. ¡La extensión está lista para usar!
 
-## Como usarla
+## Cómo usarla
 
-1. Navega al sitio que deseas "desprender".
+1. Navega a cualquier sitio web.
 2. Haz clic en el icono de la extensión.
-3. Ajusta el ancho y alto deseado.
-4. Selecciona una opción:
-   - **Ventana:** Abre una ventana popup estándar. Si tienes `pinontop` instalado, se fijará automáticamente arriba.
+3. Configura las dimensiones deseadas.
+4. Selecciona **Ventana** para el modo flotante o **Panel Lateral** para anclarlo a la derecha.
+   - Si el indicador de `pinontop` está activo, la ventana se mantendrá siempre al frente.
 
 ## Nota
 
-El estado de la herramienta `pinontop` se muestra en la parte inferior del menú de la extensión. Si aparece en amarillo/rojo, sigue las instrucciones de instalación del `CompanionApp`.
+El estado de la herramienta `pinontop` nativa se muestra en la parte inferior del menú de la extensión. Si aparece en amarillo/rojo, sigue las instrucciones de instalación.
 
 ---
 
-_Desarrollado para mejorar la productividad multiventana._
+_Desarrollado para optimizar el flujo de trabajo multiventana._

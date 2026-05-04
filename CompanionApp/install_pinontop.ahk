@@ -13,7 +13,7 @@ if (localAppData == "") {
 }
 
 ; IMPORTANTE: Este ID debe coincidir con el que ves en chrome://extensions
-extensionId := "enammhlcbbmdkfenilddkmjonmbnblop"
+extensionId := "ahjilckhjgiihfflgejechnomegidaja"
 
 installDir := localAppData . "\PopUpWeb"
 exePath := installDir . "\pinontop.exe"
