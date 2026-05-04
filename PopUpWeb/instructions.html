@@ -1,55 +1,116 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Instalación - PopUp WEB</title>
-  <style>
-    :root { background: #111827; color: #f9fafb; font-family: system-ui, sans-serif; }
-    body { max-width: 650px; margin: 40px auto; padding: 20px; line-height: 1.6; }
-    .card { background: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #334155; }
-    h1 { color: #60a5fa; margin-top: 0; }
-    .step { display: flex; gap: 15px; margin-bottom: 25px; }
-    .number { background: #2563eb; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold; }
-    code { background: #334155; padding: 3px 6px; border-radius: 4px; font-family: monospace; color: #facc15; }
-    .alert { background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>🚀 Activa el modo "Siempre Arriba"</h1>
-    <p>Para que las ventanas se mantengan flotando sobre otras aplicaciones, sigue estos pasos:</p>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Instalación - PopUp WEB</title>
+    <link rel="stylesheet" href="instructions.css">
+  </head>
+  <body>
+    <div class="cardWrapper">
+      <div class="card">
+        <h1>🚀 Activa el modo "Siempre Arriba"</h1>
+        <p>Para que las ventanas se mantengan flotando sobre otras aplicaciones,
+          puedes optar por soluciones externas reconocidas:</p>
 
-    <div class="step">
-      <div class="number">1</div>
-      <div>
-        <strong>Prepara los archivos</strong>
-        <p>Asegúrate de tener <code>pin2top.exe</code> e <code>install.exe</code> en la misma carpeta.</p>
+        <ul>
+          <li>
+            <strong>
+              <a rel="noopener noreferrer"
+                href="https://learn.microsoft.com/es-es/windows/powertoys/"
+                target="_blank">Microsoft PowerToys</a>
+            </strong>: La herramienta oficial de utilidades de Windows. Usa el
+            atajo <code>Win + Ctrl + T</code>.
+          </li>
+          <li>
+            <strong>
+              <a rel="noopener noreferrer"
+                href="https://www.savardsoftware.com/launchontop/"
+                target="_blank">Launch On Top</a>
+            </strong>: Aplicación para iniciar casi cualquier programa en un
+            estado de "siempre arriba".
+          </li>
+          <li>
+            <strong>
+              <a rel="noopener noreferrer"
+                href="https://www.savardsoftware.com/turbotop/"
+                target="_blank">TurboTop</a>
+            </strong>: Una utilidad pequeña que reside en la bandeja del
+            sistema.
+          </li>
+          <li>
+            <strong>
+              <a rel="noopener noreferrer"
+                href="https://efotinis.neocities.org/deskpins/"
+                target="_blank">DeskPins</a>
+            </strong>: Una opción clásica y ligera para "pinchar" cualquier
+            ventana.
+          </li>
+        </ul>
+        <hr />
+        <p>Si prefieres una integración <strong>automática y nativa</strong>
+          desde
+          la extensión (para no tener que usar atajos de teclado cada vez),
+          puedes activar nuestra utilidad ligera <code>pin2top</code> siguiendo
+          estos pasos:</p>
+
+        <div class="step">
+          <div class="number">1</div>
+          <div>
+            <strong>Descarga el instalador</strong>
+            <p>Descarga <code>install_pin2top.exe</code> desde nuestro <a
+                rel="noopener noreferrer"
+                href="https://github.com/SystemAlex/PopUP-Web/releases"
+                target="_blank">repositorio</a>.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="number">2</div>
+          <div>
+            <strong>Ejecuta el instalador</strong>
+            <p>Ejecuta <code>install_pin2top.exe</code>. Aprobar si el sistema
+              solicita permisos de administrador para poder registrar la
+              herramienta en el navegador.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="number">3</div>
+          <div>
+            <strong>Reinicia y Disfruta</strong>
+            <p>Cierra y abre tu navegador por completo. El indicador en la
+              extensión debería ponerse en verde ✅.</p>
+          </div>
+        </div>
+
+        <div class="alert">
+          <strong>Nota técnica:</strong> Este instalador simplemente le dice al
+          navegador dónde encontrar la herramienta para poder fijar las
+          ventanas automáticamente.
+        </div>
       </div>
     </div>
-
-    <div class="step">
-      <div class="number">2</div>
-      <div>
-        <strong>Ejecuta el instalador</strong>
-        <p>Ejecuta <code>install.exe</code>. El sistema te pedirá permisos de administrador para poder registrar la herramienta en el navegador.</p>
-      </div>
+    <div class="animatedBackground">
+      <svg
+        class="animatedWaves"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 24 150 28"
+        preserveAspectRatio="none"
+        shape-rendering="auto">
+        <defs>
+          <path
+            id="gentleWave"
+            d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+        </defs>
+        <g class="waveParallax">
+          <use xlink:href="#gentleWave" x="48" y="0" />
+          <use xlink:href="#gentleWave" x="48" y="3" />
+          <use xlink:href="#gentleWave" x="48" y="5" />
+          <use xlink:href="#gentleWave" x="48" y="7" />
+        </g>
+      </svg>
     </div>
-
-    <div class="step">
-      <div class="number">3</div>
-      <div>
-        <strong>Reinicia y Disfruta</strong>
-        <p>Cierra y abre tu navegador por completo. El indicador en la extensión debería ponerse en verde ✅.</p>
-      </div>
-    </div>
-
-    <div class="alert">
-      <strong>Nota técnica:</strong> Este instalador simplemente le dice a Chrome/Edge dónde encontrar la herramienta para poder fijar las ventanas automáticamente.
-    </div>
-
-    <p style="text-align: center; margin-top: 30px;">
-      <button onclick="window.close()" style="background:#2563eb; color:white; border:0; padding:10px 20px; border-radius:6px; cursor:pointer; font-weight:bold;">Entendido, cerrar</button>
-    </p>
-  </div>
-</body>
+  </body>
 </html>

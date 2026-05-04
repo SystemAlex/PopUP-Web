@@ -1,0 +1,153 @@
+:root {
+  color-scheme: light dark;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  --colorBrandStroke1: #1d89db;
+  margin: 0;
+  color: #334155;
+  height: 100dvh;
+  width: 100dvw;
+}
+
+.cardWrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 30px;
+}
+
+.card {
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid #334155;
+  max-width: 850px;
+  margin: auto;
+  background-color: rgb(255 255 255 / 50%);
+}
+
+.step {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.alert {
+  background: #fef5e5;
+  border-left: 4px solid #f59e0b;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+
+.number {
+  background: #1d89db;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: bold;
+}
+
+code {
+  background: rgba(0, 0, 0, 0.14);
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.button {
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    opacity 120ms ease;
+  background: #1d89db;
+  color: #eff6ff;
+  line-height: 1;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button:focus {
+  outline: 2px solid #1d89db;
+  outline-offset: 1px;
+}
+
+ul {
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+a:after {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 2048 2048' %3E%3Cpath d='M1792 256v640h-128V475l-851 850-90-90 850-851h-421V256h640zm-512 1007h128v529H256V640h529v128H384v896h896v-401z' /%3E%3C/svg%3E");
+}
+
+.animatedBackground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+}
+
+.animatedWaves {
+  position: relative;
+  width: 100%;
+  height: 20dvh;
+  margin-bottom: -4px;
+  min-height: 100px;
+  max-height: 150px;
+}
+
+.waveParallax > use {
+  animation: moveForever 25s cubic-bezier(0.55, 0.5, 0.45, 0.5) infinite;
+}
+
+.waveParallax > use:nth-child(1) {
+  fill: color-mix(in srgb, var(--colorBrandStroke1) 70%, transparent);
+  animation-delay: -2s;
+  animation-duration: 7s;
+}
+
+.waveParallax > use:nth-child(2) {
+  fill: color-mix(in srgb, var(--colorBrandStroke1) 50%, transparent);
+  animation-delay: -3s;
+  animation-duration: 10s;
+}
+
+.waveParallax > use:nth-child(3) {
+  fill: color-mix(in srgb, var(--colorBrandStroke1) 30%, transparent);
+  animation-delay: -4s;
+  animation-duration: 13s;
+}
+
+.waveParallax > use:nth-child(4) {
+  fill: color-mix(in srgb, var(--colorBrandStroke1) 90%, transparent);
+  animation-delay: -5s;
+  animation-duration: 20s;
+}
+
+@keyframes moveForever {
+  0% {
+    transform: translate3d(-90px, 0, 0);
+  }
+  100% {
+    transform: translate3d(85px, 0, 0);
+  }
+}

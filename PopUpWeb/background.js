@@ -3,9 +3,9 @@ const DEFAULT_SETTINGS = {
   width: 480,
   height: 720,
   useActiveTab: false,
+  alwaysOnTop: true,
 };
 
-// Reglas para permitir que cualquier sitio se cargue en un iframe
 const RULE_ID = 1;
 chrome.declarativeNetRequest.updateDynamicRules({
   removeRuleIds: [RULE_ID],
@@ -29,15 +29,34 @@ chrome.declarativeNetRequest.updateDynamicRules({
 });
 
 chrome.runtime.onInstalled.addListener((details) => {
-  // Guardar configuración inicial
   chrome.storage.sync.get(DEFAULT_SETTINGS, (items) => {
     chrome.storage.sync.set(sanitizeSettings(items));
   });
 
-  // Si es la primera instalación, abrir instrucciones
   if (details.reason === "install") {
     chrome.tabs.create({
       url: chrome.runtime.getURL("instructions.html"),
+    });
+  }
+});
+
+chrome.windows.onRemoved.addListener(async (windowId) => {
+  const result = await chrome.storage.local.get(["popupTracker"]);
+  const tracker = result.popupTracker || {};
+
+  if (tracker[windowId]) {
+    chrome.tabs.create({ url: tracker[windowId] });
+    delete tracker[windowId];
+    await chrome.storage.local.set({ popupTracker: tracker });
+  }
+});
+
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name === "popweb-restore") {
+    let urlToRestore = "";
+    port.onMessage.addListener((msg) => { urlToRestore = msg.url; });
+    port.onDisconnect.addListener(() => {
+      if (urlToRestore) chrome.tabs.create({ url: urlToRestore });
     });
   }
 });
@@ -56,6 +75,7 @@ function sanitizeSettings(input) {
     width: clampDimension(input.width, DEFAULT_SETTINGS.width),
     height: clampDimension(input.height, DEFAULT_SETTINGS.height),
     useActiveTab: Boolean(input.useActiveTab),
+    alwaysOnTop: input.alwaysOnTop ?? DEFAULT_SETTINGS.alwaysOnTop,
   };
 }
 
@@ -102,13 +122,17 @@ function handleOpenPopup(payload, sendResponse) {
           return;
         }
 
-        // Usar el título de la pestaña para identificar la ventana de forma legible
+        chrome.storage.local.get(["popupTracker"], (result) => {
+          const tracker = result.popupTracker || {};
+          tracker[popupWindow.id] = settings.url;
+          chrome.storage.local.set({ popupTracker: tracker });
+        });
+
         const cleanTitle = (payload.title || "Ventana")
           .replace(/"/g, "'")
           .substring(0, 50);
-        const targetTabId = popupWindow.tabs[0].id; // Obtener el ID de la pestaña dentro de la nueva ventana
-
-        // Inyectar un script para establecer un título único en la ventana
+        const targetTabId = popupWindow.tabs[0].id; 
+        
         chrome.scripting.executeScript(
           {
             target: { tabId: targetTabId },
@@ -124,7 +148,6 @@ function handleOpenPopup(payload, sendResponse) {
                 chrome.runtime.lastError.message,
               );
             }
-            // Enviar el ID único de vuelta al popup.js
             sendResponse({
               ok: true,
               windowId: popupWindow?.id ?? null,

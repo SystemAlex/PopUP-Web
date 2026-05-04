@@ -5,20 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PopUp WEB</title>
     <style>
-      body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #000; }
+      body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden;}
       iframe { width: 100%; height: 100%; border: none; }
     </style>
   </head>
   <body>
     <iframe id="content-frame" src="about:blank" title="iframe"></iframe>
-    <script>
-      const params = new URLSearchParams(window.location.search);
-      const url = params.get('url');
-      if (url) {
-        document.getElementById('content-frame').src = url;
-      } else {
-        window.close();
-      }
-    </script>
+    <script src="viewer.js"></script>
   </body>
 </html>

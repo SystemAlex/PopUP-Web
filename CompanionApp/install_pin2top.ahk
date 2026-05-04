@@ -20,7 +20,7 @@ exePath := installDir . "\pin2top.exe"
 jsonPath := installDir . "\com.popupweb.pin2top.json"
 
 ; 3. Interfaz de instalación
-if (MsgBox("¿Instalar el puente nativo 'Siempre Arriba'?`n`nID: " . extensionId, "Instalador", 36) = "No")
+if (MsgBox("¿Instalar el puente nativo 'Siempre Arriba'?", "Instalador", 36) = "No")
     ExitApp()
 
 ; 4. Cerrar procesos existentes para permitir la sobrescritura
@@ -77,6 +77,6 @@ try {
     MsgBox("Error al escribir en el registro: " e.Message, "Error", 16)
 }
 
-MsgBox("Instalación terminada con ID " . extensionId . ". Reinicia el navegador para activar el modo Siempre Arriba.",
+MsgBox("Instalación terminada. Reinicia el navegador para activar el modo Siempre Arriba.",
     "Éxito", 64)
 ExitApp()

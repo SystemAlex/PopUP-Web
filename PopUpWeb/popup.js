@@ -3,24 +3,46 @@ const widthInput = document.getElementById("width");
 const heightInput = document.getElementById("height");
 const windowButton = document.getElementById("window-button");
 const sidePanelButton = document.getElementById("sidepanel-button");
-const status = document.getElementById("status");
-const toolStatusBar = document.getElementById("tool-status-bar");
-const statusText = document.getElementById("status-text");
+const statusText = document.getElementById("status");
 const statusIcon = document.getElementById("status-icon");
+const sizePresets = document.getElementById("size-presets");
+const alwaysOnTopInput = document.getElementById("always-on-top");
 
-const DEFAULT_SETTINGS = { width: 480, height: 720 };
+const DEFAULT_SETTINGS = { width: 480, height: 720, alwaysOnTop: true };
 let isToolInstalled = false;
 
 document.addEventListener("DOMContentLoaded", () => {
   chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
     widthInput.value = settings.width;
     heightInput.value = settings.height;
+    alwaysOnTopInput.checked = settings.alwaysOnTop;
+    updatePresetSelection();
   });
-  refreshTabInfo();
+
+  sizePresets?.addEventListener("change", (e) => {
+    const value = e.target.value;
+    if (value !== "custom") {
+      const [w, h] = value.split("x");
+      widthInput.value = w;
+      heightInput.value = h;
+    }
+  });
+
+  [widthInput, heightInput].forEach((input) => {
+    input.addEventListener("input", () => {
+      updatePresetSelection();
+    });
+  });
+
+  alwaysOnTopInput?.addEventListener("change", () => {
+    const w = parseInt(widthInput.value);
+    const h = parseInt(heightInput.value);
+    saveSettings(w, h, alwaysOnTopInput.checked);
+  });
+
   checkToolInstallation();
 });
 
-// Función para verificar si pin2top está configurado en el sistema
 async function checkToolInstallation() {
   try {
     chrome.runtime.sendNativeMessage(
@@ -29,11 +51,8 @@ async function checkToolInstallation() {
       (response) => {
         if (chrome.runtime.lastError) {
           console.error("Error de Pin2Top:", chrome.runtime.lastError.message);
-          // No instalado o error de comunicación
           setToolStatus(false);
         } else {
-          console.log("Respuesta de Pin2Top recibida:", response);
-          // ¡Detectado!
           setToolStatus(true);
         }
       },
@@ -46,24 +65,23 @@ async function checkToolInstallation() {
 
 function setToolStatus(installed) {
   isToolInstalled = installed;
-  const extensionId = chrome.runtime.id;
 
   if (installed) {
-    toolStatusBar.className = "tool-status tool-status--on";
-    statusIcon.textContent = "✅";
-    statusText.innerHTML =
-      "Herramienta <b>pin2top</b> activa (Siempre Arriba habilitado).";
+    statusIcon.innerHTML =
+      '<span slot="icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20" ><path fill="#0E700E" d="M10 2a8 8 0 1 1 0 16a8 8 0 0 1 0-16m3.358 5.646a.5.5 0 0 0-.637-.057l-.07.057L9 11.298L7.354 9.651l-.07-.058a.5.5 0 0 0-.695.696l.057.07l2 2l.07.057a.5.5 0 0 0 .568 0l.07-.058l4.004-4.004l.058-.07a.5.5 0 0 0-.058-.638"></path></svg></span>';
   } else {
-    toolStatusBar.className = "tool-status tool-status--off";
-    statusIcon.textContent = "⚠️";
-    statusText.innerHTML = `Pin2Top no detectado. ID: <code>${extensionId}</code>. <a href="#" id="open-instructions">Reinstalar</a>`;
+    statusIcon.innerHTML =
+      '<span slot="icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20"><path fill="#B10E1C" d="M10 2a8 8 0 1 1 0 16a8 8 0 0 1 0-16M7.81 7.114a.5.5 0 0 0-.638.058l-.058.069a.5.5 0 0 0 .058.638L9.292 10l-2.12 2.121l-.058.07a.5.5 0 0 0 .058.637l.069.058a.5.5 0 0 0 .638-.058L10 10.708l2.121 2.12l.07.058a.5.5 0 0 0 .637-.058l.058-.069a.5.5 0 0 0-.058-.638L10.708 10l2.12-2.121l.058-.07a.5.5 0 0 0-.058-.637l-.069-.058a.5.5 0 0 0-.638.058L10 9.292l-2.121-2.12z"></path></svg></span>';
+    statusText.innerHTML =
+      "<span class='tool-status tool-status--off'>Herramienta <b>pin2top</b> no detectada. <a href='#' id='open-instructions'>Instalar aquí</a></span>";
 
-    // Re-vincular el evento después de actualizar el HTML
     const link = document.getElementById("open-instructions");
     if (link) {
       link.onclick = openInstructions;
     }
   }
+
+  refreshTabInfo();
 }
 
 function openInstructions(e) {
@@ -80,24 +98,36 @@ windowButton.addEventListener("click", async () => {
 
   const w = parseInt(widthInput.value);
   const h = parseInt(heightInput.value);
-  saveDimensions(w, h);
+  const alwaysOnTop = alwaysOnTopInput.checked;
+  saveSettings(w, h, alwaysOnTop);
 
-  // Enviar mensaje al background script para abrir la ventana
   chrome.runtime.sendMessage(
     {
       type: "open-popup-window",
-      payload: { url: tab.url, width: w, height: h, title: tab.title },
+      payload: {
+        url: tab.url,
+        width: w,
+        height: h,
+        title: tab.title,
+        alwaysOnTop: alwaysOnTop,
+      },
     },
     (response) => {
-      if (response?.ok && isToolInstalled && response.uniqueTitleId) {
-        // Si la herramienta está instalada y tenemos un ID de título único, enviamos la orden de fijar la ventana
+      if (
+        response?.ok &&
+        isToolInstalled &&
+        response.uniqueTitleId &&
+        alwaysOnTop
+      ) {
         chrome.runtime.sendNativeMessage("com.popupweb.pin2top", {
-          text: "pin_window_by_title_id", // Nueva acción específica
-          uniqueTitleId: response.uniqueTitleId, // Pasamos el ID único
+          text: "pin_window_by_title_id",
+          uniqueTitleId: response.uniqueTitleId,
         });
       }
-      // Pequeña espera antes de cerrar el popup de la extensión
-      // Esto asegura que el foco pase a la nueva ventana y AHK la detecte.
+
+      if (response?.ok) {
+        chrome.tabs.remove(tab.id);
+      }
       setTimeout(() => window.close(), 150);
     },
   );
@@ -110,41 +140,77 @@ sidePanelButton?.addEventListener("click", async () => {
   });
   if (!isValidTab(tab)) return;
 
-  // El Side Panel solo permite cargar páginas de la extensión.
-  // Usamos viewer.html como puente para cargar la URL externa.
   const targetPath = `viewer.html?url=${encodeURIComponent(tab.url)}`;
 
+  const w = parseInt(widthInput.value);
+  const h = parseInt(heightInput.value);
+  saveSettings(w, h, alwaysOnTopInput.checked);
+
   await chrome.sidePanel.setOptions({
-    windowId: tab.windowId,
     path: targetPath,
     enabled: true,
   });
 
   chrome.sidePanel.open({ windowId: tab.windowId });
+  chrome.tabs.remove(tab.id);
   window.close();
 });
 
 function isValidTab(tab) {
   if (
     !tab ||
-    tab.url.startsWith("edge://") ||
-    tab.url.startsWith("chrome://")
+    (!tab.url.startsWith("http://") && !tab.url.startsWith("https://"))
   ) {
-    status.textContent = "No disponible en páginas del sistema.";
+    statusText.innerHTML =
+      "<span class='tool-status tool-status--off'>Solo disponible en páginas WEB <b>(http:// o https://)</b>.</span>";
     return false;
+  }
+
+  if (isToolInstalled) {
+    statusText.innerHTML =
+      "<span class='tool-status tool-status--on'>Listo...</span>";
   }
   return true;
 }
 
-function saveDimensions(width, height) {
-  chrome.storage.sync.set({ width, height });
+function saveSettings(width, height, alwaysOnTop) {
+  chrome.storage.sync.set({ width, height, alwaysOnTop });
 }
 
 function refreshTabInfo() {
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-    if (tabs[0]) {
-      const title = tabs[0].title || "Pestaña actual";
-      activeTabPreview.textContent = `Pestaña detectada: ${title.substring(0, 35)}...`;
-    }
+    const currentTab = tabs[0];
+    if (!currentTab) return;
+
+    const title = currentTab.title || "Pestaña actual";
+    activeTabPreview.textContent = `Pestaña detectada: ${title.substring(0, 35)}...`;
+
+    const valid = isValidTab(currentTab);
+
+    [
+      widthInput,
+      heightInput,
+      sizePresets,
+      windowButton,
+      sidePanelButton,
+    ].forEach((el) => {
+      if (el) el.disabled = !valid;
+    });
+
+    alwaysOnTopInput.disabled = !valid || !isToolInstalled;
   });
+}
+
+function updatePresetSelection() {
+  if (!sizePresets) return;
+  const currentVal = `${widthInput.value}x${heightInput.value}`;
+  let matched = false;
+  for (const option of sizePresets.options) {
+    if (option.value === currentVal) {
+      sizePresets.value = currentVal;
+      matched = true;
+      break;
+    }
+  }
+  if (!matched) sizePresets.value = "custom";
 }
