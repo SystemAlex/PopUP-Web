@@ -12,6 +12,12 @@ const DEFAULT_SETTINGS = { width: 480, height: 720, alwaysOnTop: true };
 let isToolInstalled = false;
 
 document.addEventListener("DOMContentLoaded", () => {
+  const manifest = chrome.runtime.getManifest();
+  const footerLink = document.querySelector(".made-by-text");
+  if (footerLink) {
+    footerLink.textContent = `v${manifest.version} by ${manifest.author}`;
+  }
+
   chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
     widthInput.value = settings.width;
     heightInput.value = settings.height;
@@ -46,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function checkToolInstallation() {
   try {
     chrome.runtime.sendNativeMessage(
-      "com.popupweb.pin2top",
+      "com.popupweb.pinontop",
       { text: "ping" },
       (response) => {
         if (chrome.runtime.lastError) {
@@ -73,7 +79,7 @@ function setToolStatus(installed) {
     statusIcon.innerHTML =
       '<span slot="icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20"><path fill="#B10E1C" d="M10 2a8 8 0 1 1 0 16a8 8 0 0 1 0-16M7.81 7.114a.5.5 0 0 0-.638.058l-.058.069a.5.5 0 0 0 .058.638L9.292 10l-2.12 2.121l-.058.07a.5.5 0 0 0 .058.637l.069.058a.5.5 0 0 0 .638-.058L10 10.708l2.121 2.12l.07.058a.5.5 0 0 0 .637-.058l.058-.069a.5.5 0 0 0-.058-.638L10.708 10l2.12-2.121l.058-.07a.5.5 0 0 0-.058-.637l-.069-.058a.5.5 0 0 0-.638.058L10 9.292l-2.121-2.12z"></path></svg></span>';
     statusText.innerHTML =
-      "<span class='tool-status tool-status--off'>Herramienta <b>pin2top</b> no detectada. <a href='#' id='open-instructions'>Instalar aquí</a></span>";
+      "<span class='tool-status tool-status--off'>Herramienta <b>pinontop</b> no detectada. <a href='#' id='open-instructions'>Instalar aquí</a></span>";
 
     const link = document.getElementById("open-instructions");
     if (link) {
@@ -119,7 +125,7 @@ windowButton.addEventListener("click", async () => {
         response.uniqueTitleId &&
         alwaysOnTop
       ) {
-        chrome.runtime.sendNativeMessage("com.popupweb.pin2top", {
+        chrome.runtime.sendNativeMessage("com.popupweb.pinontop", {
           text: "pin_window_by_title_id",
           uniqueTitleId: response.uniqueTitleId,
         });

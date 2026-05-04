@@ -16,20 +16,20 @@ if (localAppData == "") {
 extensionId := "enammhlcbbmdkfenilddkmjonmbnblop"
 
 installDir := localAppData . "\PopUpWeb"
-exePath := installDir . "\pin2top.exe"
-jsonPath := installDir . "\com.popupweb.pin2top.json"
+exePath := installDir . "\pinontop.exe"
+jsonPath := installDir . "\com.popupweb.pinontop.json"
 
 ; 3. Interfaz de instalación
 if (MsgBox("¿Instalar el puente nativo 'Siempre Arriba'?", "Instalador", 36) = "No")
     ExitApp()
 
 ; 4. Cerrar procesos existentes para permitir la sobrescritura
-if ProcessExist("pin2top.exe") {
+if ProcessExist("pinontop.exe") {
     try {
-        ProcessClose("pin2top.exe")
-        if ProcessWaitClose("pin2top.exe", 5) {
+        ProcessClose("pinontop.exe")
+        if ProcessWaitClose("pinontop.exe", 5) {
             MsgBox(
-                "No se pudo cerrar pin2top.exe automáticamente. Por favor, ciérralo desde el Administrador de Tareas.",
+                "No se pudo cerrar pinontop.exe automáticamente. Por favor, ciérralo desde el Administrador de Tareas.",
                 "Error", 16)
             ExitApp()
         }
@@ -41,16 +41,16 @@ try {
     if !DirExist(installDir)
         DirCreate(installDir)
 
-    FileInstall("pin2top.exe", exePath, 1)
+    FileInstall("pinontop.exe", exePath, 1)
 } catch Error as e {
-    MsgBox("Error al copiar pin2top.exe: " e.Message, "Error", 16)
+    MsgBox("Error al copiar pinontop.exe: " e.Message, "Error", 16)
     ExitApp()
 }
 
 ; 5. Crear manifiesto JSON con el origen permitido específico
 escapedPath := StrReplace(exePath, "\", "\\")
 jsonContent := '{' .
-    '`n  "name": "com.popupweb.pin2top",' .
+    '`n  "name": "com.popupweb.pinontop",' .
     '`n  "description": "Bridge for PopUp WEB Always on Top",' .
     '`n  "path": "' . escapedPath . '",' .
     '`n  "type": "stdio",' .
@@ -67,12 +67,14 @@ f.Close()
 
 ; 6. Escribir en el Registro (Chrome y Edge)
 try {
-    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\com.popupweb.pin2top")
-    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Microsoft\Edge\NativeMessagingHosts\com.popupweb.pin2top")
+    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\com.popupweb.pinontop")
+    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Microsoft\Edge\NativeMessagingHosts\com.popupweb.pinontop"
+    )
     ; Soporte adicional para Brave, Vivaldi y Opera (Chromium-based)
-    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Brave-Browser\NativeMessagingHosts\com.popupweb.pin2top")
-    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Vivaldi\NativeMessagingHosts\com.popupweb.pin2top")
-    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Opera Software\NativeMessagingHosts\com.popupweb.pin2top")
+    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Brave-Browser\NativeMessagingHosts\com.popupweb.pinontop")
+    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Vivaldi\NativeMessagingHosts\com.popupweb.pinontop")
+    RegWrite(jsonPath, "REG_SZ", "HKEY_CURRENT_USER\Software\Opera Software\NativeMessagingHosts\com.popupweb.pinontop"
+    )
 } catch Error as e {
     MsgBox("Error al escribir en el registro: " e.Message, "Error", 16)
 }

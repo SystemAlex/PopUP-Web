@@ -31,11 +31,11 @@ Para que la función de fijar ventana funcione, debes configurar la aplicación 
 2. Haz clic en el icono de la extensión.
 3. Ajusta el ancho y alto deseado.
 4. Selecciona una opción:
-   - **Ventana:** Abre una ventana popup estándar. Si tienes `pin2top` instalado, se fijará automáticamente arriba.
+   - **Ventana:** Abre una ventana popup estándar. Si tienes `pinontop` instalado, se fijará automáticamente arriba.
 
 ## Nota
 
-El estado de la herramienta `pin2top` se muestra en la parte inferior del menú de la extensión. Si aparece en amarillo/rojo, sigue las instrucciones de instalación del `CompanionApp`.
+El estado de la herramienta `pinontop` se muestra en la parte inferior del menú de la extensión. Si aparece en amarillo/rojo, sigue las instrucciones de instalación del `CompanionApp`.
 
 ---
 

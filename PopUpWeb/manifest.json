@@ -6,7 +6,6 @@
   "default_locale": "es",
   "author": "SystemAlex",
   "homepage_url": "https://github.com/SystemAlex/PopUP-Web",
-  "license": "MIT",
   "minimum_chrome_version": "88",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4v5EzOXP3aAPCLVZsxc7TkTCTmLaHCreerlw85cDYxmxoPe52UGpvTR/oEl4S0p+5ngajOKhONSExhxxSgc7VX5MzbnCD6c3ThjRy0kLILkJgNBy7kdLdU6NTaToRIE8Ojaohfk3vVd9fFIQwodt6CwGfeoAV0FGM3reCFJUYrxpwpCvX5GjhJE5P3YRhOVJmqS+4WVNp2mrYS4eo292ilSbeuLkg37lkHxtmklyaw5MEn68GEGiaUMIFcumcjHs9ofsSnIFHoyaG4luyCwxjTlAn3vRC+ArtwUyIPZh26Zm+NCVBI2jjv807lem+fyISlRdW3l0aKsvNAS56gXRdwIDAQAB",
   "permissions": [

@@ -60,7 +60,7 @@ h1 {
   margin: 8px 0 0;
   font-size: 14px;
   line-height: 1.5;
-  color: #769edb;
+  color: #84c6fa;
 }
 
 .form {
@@ -224,7 +224,7 @@ input:checked + .slider:before {
   min-height: 20px;
   margin: 0;
   font-size: 13px;
-  color: #769edb;
+  color: #84c6fa;
 }
 
 .tool-icon {
@@ -328,4 +328,21 @@ select {
       outline-offset: 1px;
     }
   }
+}
+
+.made-by {
+  left: 4px;
+  bottom: 4px;
+  position: fixed;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.made-by-text {
+  color: #1d89db;
+  font-size: x-small;
+  line-height: 1;
+  text-decoration: inherit;
 }
